@@ -1,0 +1,23 @@
+{
+  "name": "JorisHoef.ObjectLoading.APIHelperBridge.Tests",
+  "rootNamespace": "JorisHoef.ObjectLoading.APIHelperBridge.Tests",
+  "references": [
+    "JorisHoef.ObjectLoading.APIHelperBridge.Runtime",
+    "JorisHoef.ObjectLoading.Runtime",
+    "APIHelper"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}

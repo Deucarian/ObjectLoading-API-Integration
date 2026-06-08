@@ -1,0 +1,29 @@
+{
+  "name": "com.jorishoef.object-loading.api-helper-bridge",
+  "displayName": "JorisHoef Object Loading API Helper Bridge",
+  "version": "0.1.0",
+  "unity": "2021.3",
+  "description": "Optional bridge that lets JorisHoef Object Loading download AssetBundle bytes through API Helper.",
+  "keywords": [
+    "assetbundle",
+    "object-loading",
+    "api-helper",
+    "bridge"
+  ],
+  "category": "Integration",
+  "author": {
+    "name": "JorisHoef"
+  },
+  "dependencies": {
+    "com.jorishoef.object-loading": "0.1.0",
+    "com.jorishoef.api-helper": "1.0.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.2"
+  },
+  "samples": [
+    {
+      "displayName": "API Helper Downloader Sample",
+      "description": "Shows how to compose Object Loading with ApiHelperObjectDownloader.",
+      "path": "Samples~/ApiHelperDownloaderSample"
+    }
+  ]
+}

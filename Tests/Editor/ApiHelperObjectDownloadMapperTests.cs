@@ -1,0 +1,103 @@
+using System;
+using NUnit.Framework;
+using JorisHoef.APIHelper.Models;
+using JorisHoef.ObjectLoading;
+
+namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
+{
+    public sealed class ApiHelperObjectDownloadMapperTests
+    {
+        [Test]
+        public void CreateApiRequest_ForwardsHeadersAndBearerToken()
+        {
+            ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
+            request.BearerToken = "Bearer secret-token";
+            request.TimeoutSeconds = 42;
+            request.AddHeader("X-Trace", "abc");
+
+            ApiRequest apiRequest = ApiHelperObjectDownloadMapper.CreateApiRequest(
+                ObjectSource.DirectUrl("https://example.com/object.bundle?platform=webgl"),
+                request);
+
+            Assert.AreEqual("https://example.com/object.bundle?platform=webgl", apiRequest.Endpoint);
+            Assert.AreEqual(ApiAuthenticationRequirement.Required, apiRequest.Authentication);
+            Assert.AreEqual(ApiResponseFormat.Bytes, apiRequest.ResponseFormat);
+            Assert.AreEqual("secret-token", apiRequest.BearerTokenOverride);
+            Assert.AreEqual(42, apiRequest.TimeoutSeconds);
+            Assert.AreEqual("abc", apiRequest.Headers["X-Trace"]);
+            Assert.False(apiRequest.Headers.ContainsKey("Authorization"));
+        }
+
+        [Test]
+        public void CreateApiRequest_ParsesExplicitAuthorizationHeader()
+        {
+            ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
+            request.AddHeader("Authorization", "Bearer header-token");
+
+            ApiRequest apiRequest = ApiHelperObjectDownloadMapper.CreateApiRequest(
+                ObjectSource.DirectUrl(request.Url),
+                request);
+
+            Assert.AreEqual(ApiAuthenticationRequirement.Required, apiRequest.Authentication);
+            Assert.AreEqual("header-token", apiRequest.BearerTokenOverride);
+            Assert.False(apiRequest.Headers.ContainsKey("Authorization"));
+        }
+
+        [Test]
+        public void MapApiResult_MapsSuccessfulBytes()
+        {
+            byte[] bytes = { 1, 2, 3 };
+            ApiResult<byte[]> apiResult = ApiResult<byte[]>.Success(
+                bytes,
+                JorisHoef.APIHelper.HttpMethod.GET,
+                200,
+                "https://example.com/object.bundle",
+                null);
+
+            ObjectDownloadResult result = ApiHelperObjectDownloadMapper.MapApiResult(apiResult);
+
+            Assert.True(result.Succeeded);
+            Assert.AreEqual(200, result.HttpStatusCode);
+            Assert.AreSame(bytes, result.Bytes);
+        }
+
+        [Test]
+        public void MapApiResult_MapsApiError()
+        {
+            ApiError error = new ApiError
+            {
+                Message = "Denied",
+                HttpStatusCode = 403,
+                RequestUrl = "https://example.com/object.bundle",
+                Exception = new InvalidOperationException("Nope")
+            };
+            ApiResult<byte[]> apiResult = ApiResult<byte[]>.Failure(error, JorisHoef.APIHelper.HttpMethod.GET);
+
+            ObjectDownloadResult result = ApiHelperObjectDownloadMapper.MapApiResult(apiResult);
+
+            Assert.False(result.Succeeded);
+            Assert.AreEqual(ObjectLoadErrorCode.DownloadFailed, result.Error.Code);
+            Assert.AreEqual("Denied", result.Error.Message);
+            Assert.AreEqual(403, result.Error.HttpStatusCode);
+            Assert.AreEqual("Nope", result.Error.ExceptionMessage);
+        }
+
+        [Test]
+        public void DebugSnapshot_RedactsBearerTokenAndSensitiveHeaders()
+        {
+            ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
+            request.BearerToken = "secret-token";
+            request.AddHeader("X-Access-Token", "header-secret");
+            request.AddHeader("X-Trace", "visible");
+
+            string json = ApiHelperObjectDownloadMapper.CreateDebugSnapshotJson(
+                ObjectSource.DirectUrl(request.Url),
+                request);
+
+            Assert.False(json.Contains("secret-token"));
+            Assert.False(json.Contains("header-secret"));
+            Assert.True(json.Contains("[redacted]"));
+            Assert.True(json.Contains("visible"));
+        }
+    }
+}

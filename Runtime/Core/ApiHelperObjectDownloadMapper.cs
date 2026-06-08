@@ -1,0 +1,210 @@
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using JorisHoef.APIHelper;
+using JorisHoef.APIHelper.Models;
+using JorisHoef.ObjectLoading;
+
+namespace JorisHoef.ObjectLoading.APIHelperBridge
+{
+    public static class ApiHelperObjectDownloadMapper
+    {
+        private const string RedactedValue = "[redacted]";
+
+        public static ObjectLoadError Validate(ObjectSource source)
+        {
+            if (source == null || string.IsNullOrWhiteSpace(source.Url))
+            {
+                return ObjectLoadError.Create(
+                    ObjectLoadErrorCode.InvalidRequest,
+                    "Object source URL is missing.");
+            }
+
+            return null;
+        }
+
+        public static ApiRequest CreateApiRequest(ObjectSource source, ObjectLoadRequest request)
+        {
+            ObjectLoadError validation = Validate(source);
+            if (validation != null)
+            {
+                throw new ArgumentException(validation.Message, nameof(source));
+            }
+
+            Dictionary<string, string> headers = request != null
+                ? request.CreateHeaders()
+                : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            string bearerToken = ExtractBearerToken(headers);
+            if (string.IsNullOrWhiteSpace(bearerToken) && request != null)
+            {
+                bearerToken = ObjectLoadRequest.StripBearerPrefix(request.BearerToken);
+            }
+
+            ApiRequest apiRequest = new ApiRequest(
+                source.Url,
+                HttpMethod.GET,
+                string.IsNullOrWhiteSpace(bearerToken)
+                    ? ApiAuthenticationRequirement.Disabled
+                    : ApiAuthenticationRequirement.Required)
+            {
+                ResponseFormat = ApiResponseFormat.Bytes,
+                BearerTokenOverride = bearerToken,
+                TimeoutSeconds = request != null && request.TimeoutSeconds > 0
+                    ? (int?)request.TimeoutSeconds
+                    : null
+            };
+
+            foreach (KeyValuePair<string, string> header in headers)
+            {
+                if (string.IsNullOrWhiteSpace(header.Key)
+                    || string.Equals(header.Key, "Authorization", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                apiRequest.Headers[header.Key.Trim()] = header.Value;
+            }
+
+            return apiRequest;
+        }
+
+        public static ObjectDownloadResult MapApiResult(ApiResult<byte[]> result, string fallbackUrl = null)
+        {
+            if (result == null)
+            {
+                return ObjectDownloadResult.Failure(ObjectLoadError.Create(
+                    ObjectLoadErrorCode.DownloadFailed,
+                    "API Helper returned no result.",
+                    fallbackUrl));
+            }
+
+            if (!result.IsSuccess)
+            {
+                return ObjectDownloadResult.Failure(MapError(result, fallbackUrl));
+            }
+
+            if (result.Data == null || result.Data.Length == 0)
+            {
+                return ObjectDownloadResult.Failure(ObjectLoadError.Create(
+                    ObjectLoadErrorCode.EmptyDownload,
+                    "API Helper download returned no bytes.",
+                    result.RequestUrl ?? fallbackUrl,
+                    result.HttpStatusCode));
+            }
+
+            return ObjectDownloadResult.Success(
+                result.Data,
+                result.HttpStatusCode ?? 0,
+                new Dictionary<string, string>());
+        }
+
+        public static ObjectLoadError MapError(ApiResult<byte[]> result, string fallbackUrl = null)
+        {
+            ApiError error = result != null ? result.Error : null;
+            ObjectLoadErrorCode code = error != null && error.IsCancellation
+                ? ObjectLoadErrorCode.Canceled
+                : ObjectLoadErrorCode.DownloadFailed;
+
+            string message = error != null && !string.IsNullOrWhiteSpace(error.Message)
+                ? error.Message
+                : "API Helper download failed.";
+
+            string requestUrl = error != null && !string.IsNullOrWhiteSpace(error.RequestUrl)
+                ? error.RequestUrl
+                : result != null && !string.IsNullOrWhiteSpace(result.RequestUrl)
+                    ? result.RequestUrl
+                    : fallbackUrl;
+
+            long? statusCode = error != null && error.HttpStatusCode.HasValue
+                ? error.HttpStatusCode
+                : result != null
+                    ? result.HttpStatusCode
+                    : null;
+
+            string exceptionMessage = error != null && error.Exception != null
+                ? error.Exception.Message
+                : null;
+
+            return ObjectLoadError.Create(code, message, requestUrl, statusCode, exceptionMessage);
+        }
+
+        public static string CreateDebugSnapshotJson(ObjectSource source, ObjectLoadRequest request)
+        {
+            ApiRequest apiRequest = CreateApiRequest(source, request);
+            Dictionary<string, string> redactedHeaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (KeyValuePair<string, string> header in apiRequest.Headers)
+            {
+                redactedHeaders[header.Key] = IsSensitiveHeader(header.Key) ? RedactedValue : header.Value;
+            }
+
+            ApiHelperObjectDownloadDebugSnapshot snapshot = new ApiHelperObjectDownloadDebugSnapshot
+            {
+                Endpoint = apiRequest.Endpoint,
+                Method = apiRequest.Method.ToString(),
+                Authentication = apiRequest.Authentication.ToString(),
+                ResponseFormat = apiRequest.ResponseFormat.ToString(),
+                TimeoutSeconds = apiRequest.TimeoutSeconds,
+                BearerTokenOverride = string.IsNullOrWhiteSpace(apiRequest.BearerTokenOverride) ? null : RedactedValue,
+                Headers = redactedHeaders
+            };
+
+            return JsonConvert.SerializeObject(snapshot, Formatting.Indented);
+        }
+
+        private static string ExtractBearerToken(Dictionary<string, string> headers)
+        {
+            if (headers == null)
+            {
+                return null;
+            }
+
+            string authorization;
+            if (!headers.TryGetValue("Authorization", out authorization))
+            {
+                return null;
+            }
+
+            return ObjectLoadRequest.StripBearerPrefix(authorization);
+        }
+
+        private static bool IsSensitiveHeader(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return false;
+            }
+
+            string normalized = name.Trim();
+            return normalized.Equals("Authorization", StringComparison.OrdinalIgnoreCase)
+                   || normalized.Equals("Proxy-Authorization", StringComparison.OrdinalIgnoreCase)
+                   || normalized.Equals("X-Api-Key", StringComparison.OrdinalIgnoreCase)
+                   || normalized.Equals("Api-Key", StringComparison.OrdinalIgnoreCase)
+                   || normalized.IndexOf("token", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+    }
+
+    public sealed class ApiHelperObjectDownloadDebugSnapshot
+    {
+        [JsonProperty("endpoint")]
+        public string Endpoint { get; set; }
+
+        [JsonProperty("method")]
+        public string Method { get; set; }
+
+        [JsonProperty("authentication")]
+        public string Authentication { get; set; }
+
+        [JsonProperty("response_format")]
+        public string ResponseFormat { get; set; }
+
+        [JsonProperty("timeout_seconds")]
+        public int? TimeoutSeconds { get; set; }
+
+        [JsonProperty("bearer_token_override")]
+        public string BearerTokenOverride { get; set; }
+
+        [JsonProperty("headers")]
+        public Dictionary<string, string> Headers { get; set; }
+    }
+}
