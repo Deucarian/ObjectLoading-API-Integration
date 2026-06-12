@@ -1,22 +1,22 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
-using JorisHoef.APIHelper.Core;
-using JorisHoef.APIHelper.Models;
-using JorisHoef.ObjectLoading;
+using Deucarian.API.Core;
+using Deucarian.API.Models;
+using Deucarian.ObjectLoading;
 
-namespace JorisHoef.ObjectLoading.APIHelperBridge
+namespace Deucarian.ObjectLoading.APIBridge
 {
-    public sealed class ApiHelperObjectDownloader : IObjectDownloader
+    public sealed class ApiObjectDownloader : IObjectDownloader
     {
         private readonly IApiClient _apiClient;
 
-        public ApiHelperObjectDownloader()
+        public ApiObjectDownloader()
             : this(ApiClientFactory.CreateDefault())
         {
         }
 
-        public ApiHelperObjectDownloader(IApiClient apiClient)
+        public ApiObjectDownloader(IApiClient apiClient)
         {
             _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
         }
@@ -25,14 +25,14 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
                                          ObjectLoadRequest request,
                                          Action<ObjectDownloadResult> onCompleted)
         {
-            ObjectLoadError validationError = ApiHelperObjectDownloadMapper.Validate(source);
+            ObjectLoadError validationError = ApiObjectDownloadMapper.Validate(source);
             if (validationError != null)
             {
                 onCompleted?.Invoke(ObjectDownloadResult.Failure(validationError));
                 yield break;
             }
 
-            ApiRequest apiRequest = ApiHelperObjectDownloadMapper.CreateApiRequest(source, request);
+            ApiRequest apiRequest = ApiObjectDownloadMapper.CreateApiRequest(source, request);
             Task<ApiResult<byte[]>> task = _apiClient.SendAsync<byte[]>(
                 apiRequest,
                 request != null ? request.CancellationToken : default);
@@ -43,7 +43,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
                 {
                     onCompleted?.Invoke(ObjectDownloadResult.Failure(ObjectLoadError.Create(
                         ObjectLoadErrorCode.Canceled,
-                        "API Helper AssetBundle download was canceled.",
+                        "API AssetBundle download was canceled.",
                         source.Url)));
                     yield break;
                 }
@@ -55,7 +55,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
             {
                 onCompleted?.Invoke(ObjectDownloadResult.Failure(ObjectLoadError.Create(
                     ObjectLoadErrorCode.Canceled,
-                    "API Helper AssetBundle download was canceled.",
+                    "API AssetBundle download was canceled.",
                     source.Url)));
                 yield break;
             }
@@ -65,14 +65,14 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
                 Exception exception = task.Exception != null ? task.Exception.GetBaseException() : null;
                 onCompleted?.Invoke(ObjectDownloadResult.Failure(ObjectLoadError.Create(
                     ObjectLoadErrorCode.DownloadFailed,
-                    "API Helper AssetBundle download failed: " + (exception != null ? exception.Message : "Unknown error."),
+                    "API AssetBundle download failed: " + (exception != null ? exception.Message : "Unknown error."),
                     source.Url,
                     null,
                     exception != null ? exception.Message : null)));
                 yield break;
             }
 
-            onCompleted?.Invoke(ApiHelperObjectDownloadMapper.MapApiResult(task.Result, source.Url));
+            onCompleted?.Invoke(ApiObjectDownloadMapper.MapApiResult(task.Result, source.Url));
         }
     }
 }

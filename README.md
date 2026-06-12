@@ -1,21 +1,21 @@
-# JorisHoef Object Loading API Helper Bridge
+# Deucarian Object Loading API Bridge
 
-`com.jorishoef.object-loading.api-helper-bridge` is an optional UPM package that adapts API Helper to JorisHoef Object Loading.
+`com.deucarian.object-loading.api-bridge` is an optional UPM package that adapts API to Deucarian Object Loading.
 
-The core `com.jorishoef.object-loading` package has no API Helper dependency. Use this bridge only when downloads should go through API Helper request handling.
+The core `com.deucarian.object-loading` package has no API dependency. Use this bridge only when downloads should go through API request handling.
 
 ## What It Does
 
-- Implements `IObjectDownloader` as `ApiHelperObjectDownloader`.
-- Converts `ObjectLoadRequest` URL, headers, bearer token, timeout, and cancellation into an API Helper `ApiRequest`.
+- Implements `IObjectDownloader` as `ApiObjectDownloader`.
+- Converts `ObjectLoadRequest` URL, headers, bearer token, timeout, and cancellation into an API `ApiRequest`.
 - Requests `ApiResponseFormat.Bytes`.
 - Maps `ApiResult<byte[]>` back to `ObjectDownloadResult`.
-- Maps API Helper errors to `ObjectLoadError`.
-- Keeps auth token passing explicit through `ObjectLoadRequest.BearerToken`, `Authorization: Bearer ...`, or an explicitly composed API Helper client.
+- Maps API errors to `ObjectLoadError`.
+- Keeps auth token passing explicit through `ObjectLoadRequest.BearerToken`, `Authorization: Bearer ...`, or an explicitly composed API client.
 
 ## What It Does Not Do
 
-- No Session Helper dependency.
+- No Session dependency.
 - No backend URL resolving.
 - No backend DTOs.
 - No glTF loading.
@@ -28,12 +28,12 @@ Backend URL resolving remains outside this bridge. Resolve the final URL elsewhe
 ## Usage
 
 ```csharp
-using JorisHoef.ObjectLoading;
-using JorisHoef.ObjectLoading.APIHelperBridge;
+using Deucarian.ObjectLoading;
+using Deucarian.ObjectLoading.APIBridge;
 
 ObjectLoadingPipeline pipeline = new ObjectLoadingPipeline(
     new DirectUrlSourceResolver(),
-    new ApiHelperObjectDownloader(),
+    new ApiObjectDownloader(),
     new AssetBundleContentLoader(),
     new AssetBundleObjectInstantiator(),
     new DefaultObjectDiagnostics());
@@ -43,10 +43,10 @@ request.BearerToken = accessToken;
 request.AddHeader("X-Custom-Header", "value");
 ```
 
-For explicit composition and tests, pass your own API Helper client:
+For explicit composition and tests, pass your own API client:
 
 ```csharp
-ApiHelperObjectDownloader downloader = new ApiHelperObjectDownloader(apiClient);
+ApiObjectDownloader downloader = new ApiObjectDownloader(apiClient);
 ```
 
 ## Auth And Headers
@@ -55,4 +55,4 @@ ApiHelperObjectDownloader downloader = new ApiHelperObjectDownloader(apiClient);
 
 An explicit `Authorization: Bearer ...` header is also parsed into `BearerTokenOverride`. Other headers are forwarded unchanged.
 
-`ApiHelperObjectDownloadMapper.CreateDebugSnapshotJson(...)` redacts bearer tokens and sensitive headers.
+`ApiObjectDownloadMapper.CreateDebugSnapshotJson(...)` redacts bearer tokens and sensitive headers.

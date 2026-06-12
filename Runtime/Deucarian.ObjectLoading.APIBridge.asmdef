@@ -1,9 +1,9 @@
 {
-  "name": "JorisHoef.ObjectLoading.APIHelperBridge.Runtime",
-  "rootNamespace": "JorisHoef.ObjectLoading.APIHelperBridge",
+  "name": "Deucarian.ObjectLoading.APIBridge",
+  "rootNamespace": "Deucarian.ObjectLoading.APIBridge",
   "references": [
-    "JorisHoef.ObjectLoading.Runtime",
-    "APIHelper",
+    "Deucarian.ObjectLoading",
+    "Deucarian.API",
     "Newtonsoft.Json"
   ],
   "includePlatforms": [],

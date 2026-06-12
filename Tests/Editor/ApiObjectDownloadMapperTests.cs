@@ -1,11 +1,11 @@
 using System;
 using NUnit.Framework;
-using JorisHoef.APIHelper.Models;
-using JorisHoef.ObjectLoading;
+using Deucarian.API.Models;
+using Deucarian.ObjectLoading;
 
-namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
+namespace Deucarian.ObjectLoading.APIBridge.Tests
 {
-    public sealed class ApiHelperObjectDownloadMapperTests
+    public sealed class ApiObjectDownloadMapperTests
     {
         [Test]
         public void CreateApiRequest_ForwardsHeadersAndBearerToken()
@@ -15,7 +15,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
             request.TimeoutSeconds = 42;
             request.AddHeader("X-Trace", "abc");
 
-            ApiRequest apiRequest = ApiHelperObjectDownloadMapper.CreateApiRequest(
+            ApiRequest apiRequest = ApiObjectDownloadMapper.CreateApiRequest(
                 ObjectSource.DirectUrl("https://example.com/object.bundle?platform=webgl"),
                 request);
 
@@ -34,7 +34,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
             ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
             request.AddHeader("Authorization", "Bearer header-token");
 
-            ApiRequest apiRequest = ApiHelperObjectDownloadMapper.CreateApiRequest(
+            ApiRequest apiRequest = ApiObjectDownloadMapper.CreateApiRequest(
                 ObjectSource.DirectUrl(request.Url),
                 request);
 
@@ -49,12 +49,12 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
             byte[] bytes = { 1, 2, 3 };
             ApiResult<byte[]> apiResult = ApiResult<byte[]>.Success(
                 bytes,
-                JorisHoef.APIHelper.HttpMethod.GET,
+                Deucarian.API.HttpMethod.GET,
                 200,
                 "https://example.com/object.bundle",
                 null);
 
-            ObjectDownloadResult result = ApiHelperObjectDownloadMapper.MapApiResult(apiResult);
+            ObjectDownloadResult result = ApiObjectDownloadMapper.MapApiResult(apiResult);
 
             Assert.True(result.Succeeded);
             Assert.AreEqual(200, result.HttpStatusCode);
@@ -71,9 +71,9 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
                 RequestUrl = "https://example.com/object.bundle",
                 Exception = new InvalidOperationException("Nope")
             };
-            ApiResult<byte[]> apiResult = ApiResult<byte[]>.Failure(error, JorisHoef.APIHelper.HttpMethod.GET);
+            ApiResult<byte[]> apiResult = ApiResult<byte[]>.Failure(error, Deucarian.API.HttpMethod.GET);
 
-            ObjectDownloadResult result = ApiHelperObjectDownloadMapper.MapApiResult(apiResult);
+            ObjectDownloadResult result = ApiObjectDownloadMapper.MapApiResult(apiResult);
 
             Assert.False(result.Succeeded);
             Assert.AreEqual(ObjectLoadErrorCode.DownloadFailed, result.Error.Code);
@@ -90,7 +90,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
             request.AddHeader("X-Access-Token", "header-secret");
             request.AddHeader("X-Trace", "visible");
 
-            string json = ApiHelperObjectDownloadMapper.CreateDebugSnapshotJson(
+            string json = ApiObjectDownloadMapper.CreateDebugSnapshotJson(
                 ObjectSource.DirectUrl(request.Url),
                 request);
 

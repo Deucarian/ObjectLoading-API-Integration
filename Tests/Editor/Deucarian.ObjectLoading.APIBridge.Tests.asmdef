@@ -1,10 +1,10 @@
 {
-  "name": "JorisHoef.ObjectLoading.APIHelperBridge.Tests",
-  "rootNamespace": "JorisHoef.ObjectLoading.APIHelperBridge.Tests",
+  "name": "Deucarian.ObjectLoading.APIBridge.Tests",
+  "rootNamespace": "Deucarian.ObjectLoading.APIBridge.Tests",
   "references": [
-    "JorisHoef.ObjectLoading.APIHelperBridge.Runtime",
-    "JorisHoef.ObjectLoading.Runtime",
-    "APIHelper"
+    "Deucarian.ObjectLoading.APIBridge",
+    "Deucarian.ObjectLoading",
+    "Deucarian.API"
   ],
   "includePlatforms": [
     "Editor"

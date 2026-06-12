@@ -1,9 +1,9 @@
 using System.Collections;
-using JorisHoef.ObjectLoading;
-using JorisHoef.ObjectLoading.APIHelperBridge;
+using Deucarian.ObjectLoading;
+using Deucarian.ObjectLoading.APIBridge;
 using UnityEngine;
 
-public sealed class ApiHelperBridgeDownloaderSample : MonoBehaviour
+public sealed class ApiBridgeDownloaderSample : MonoBehaviour
 {
     [SerializeField] private string assetBundleUrl;
     [SerializeField] private string bearerToken;
@@ -16,7 +16,7 @@ public sealed class ApiHelperBridgeDownloaderSample : MonoBehaviour
     {
         _pipeline = new ObjectLoadingPipeline(
             new DirectUrlSourceResolver(),
-            new ApiHelperObjectDownloader(),
+            new ApiObjectDownloader(),
             new AssetBundleContentLoader(),
             new AssetBundleObjectInstantiator(),
             new DefaultObjectDiagnostics());

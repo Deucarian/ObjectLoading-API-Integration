@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using JorisHoef.APIHelper;
-using JorisHoef.APIHelper.Models;
-using JorisHoef.ObjectLoading;
+using Deucarian.API;
+using Deucarian.API.Models;
+using Deucarian.ObjectLoading;
 
-namespace JorisHoef.ObjectLoading.APIHelperBridge
+namespace Deucarian.ObjectLoading.APIBridge
 {
-    public static class ApiHelperObjectDownloadMapper
+    public static class ApiObjectDownloadMapper
     {
         private const string RedactedValue = "[redacted]";
 
@@ -75,7 +75,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
             {
                 return ObjectDownloadResult.Failure(ObjectLoadError.Create(
                     ObjectLoadErrorCode.DownloadFailed,
-                    "API Helper returned no result.",
+                    "API returned no result.",
                     fallbackUrl));
             }
 
@@ -88,7 +88,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
             {
                 return ObjectDownloadResult.Failure(ObjectLoadError.Create(
                     ObjectLoadErrorCode.EmptyDownload,
-                    "API Helper download returned no bytes.",
+                    "API download returned no bytes.",
                     result.RequestUrl ?? fallbackUrl,
                     result.HttpStatusCode));
             }
@@ -108,7 +108,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
 
             string message = error != null && !string.IsNullOrWhiteSpace(error.Message)
                 ? error.Message
-                : "API Helper download failed.";
+                : "API download failed.";
 
             string requestUrl = error != null && !string.IsNullOrWhiteSpace(error.RequestUrl)
                 ? error.RequestUrl
@@ -138,7 +138,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
                 redactedHeaders[header.Key] = IsSensitiveHeader(header.Key) ? RedactedValue : header.Value;
             }
 
-            ApiHelperObjectDownloadDebugSnapshot snapshot = new ApiHelperObjectDownloadDebugSnapshot
+            ApiObjectDownloadDebugSnapshot snapshot = new ApiObjectDownloadDebugSnapshot
             {
                 Endpoint = apiRequest.Endpoint,
                 Method = apiRequest.Method.ToString(),
@@ -184,7 +184,7 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge
         }
     }
 
-    public sealed class ApiHelperObjectDownloadDebugSnapshot
+    public sealed class ApiObjectDownloadDebugSnapshot
     {
         [JsonProperty("endpoint")]
         public string Endpoint { get; set; }

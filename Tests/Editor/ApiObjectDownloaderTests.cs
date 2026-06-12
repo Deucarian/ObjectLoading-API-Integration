@@ -2,12 +2,12 @@ using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using JorisHoef.APIHelper.Models;
-using JorisHoef.ObjectLoading;
+using Deucarian.API.Models;
+using Deucarian.ObjectLoading;
 
-namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
+namespace Deucarian.ObjectLoading.APIBridge.Tests
 {
-    public sealed class ApiHelperObjectDownloaderTests
+    public sealed class ApiObjectDownloaderTests
     {
         [Test]
         public void DownloadAsync_UsesApiClientAndMapsResult()
@@ -16,12 +16,12 @@ namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
             {
                 NextBytesResult = ApiResult<byte[]>.Success(
                     new byte[] { 9, 8, 7 },
-                    JorisHoef.APIHelper.HttpMethod.GET,
+                    Deucarian.API.HttpMethod.GET,
                     200,
                     "https://example.com/object.bundle",
                     null)
             };
-            ApiHelperObjectDownloader downloader = new ApiHelperObjectDownloader(client);
+            ApiObjectDownloader downloader = new ApiObjectDownloader(client);
             ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
             request.BearerToken = "token";
             ObjectDownloadResult result = null;

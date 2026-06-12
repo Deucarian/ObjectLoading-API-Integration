@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using JorisHoef.APIHelper.Core;
-using JorisHoef.APIHelper.Models;
+using Deucarian.API.Core;
+using Deucarian.API.Models;
 
-namespace JorisHoef.ObjectLoading.APIHelperBridge.Tests
+namespace Deucarian.ObjectLoading.APIBridge.Tests
 {
     internal sealed class RecordingApiClient : IApiClient
     {
