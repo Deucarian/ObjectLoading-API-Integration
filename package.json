@@ -14,6 +14,10 @@
   "author": {
     "name": "Deucarian"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Deucarian/Object-Loading-API-Bridge.git"
+  },
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.deucarian.object-loading": "0.4.1",
