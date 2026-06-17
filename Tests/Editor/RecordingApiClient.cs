@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Deucarian.API.Core;
 using Deucarian.API.Models;
 
-namespace Deucarian.ObjectLoading.APIBridge.Tests
+namespace Deucarian.ObjectLoading.APIIntegration.Tests
 {
     internal sealed class RecordingApiClient : IApiClient
     {

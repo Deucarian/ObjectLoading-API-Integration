@@ -1,10 +1,12 @@
-# Deucarian Object Loading API Bridge
+# Deucarian Object Loading API Integration
 
 ## Overview
 
-`com.deucarian.object-loading.api-bridge` is an optional UPM package that adapts API to Deucarian Object Loading.
+`com.deucarian.object-loading.api-integration` is an optional UPM package that adapts API to Deucarian Object Loading.
 
-The core `com.deucarian.object-loading` package has no API dependency. Use this bridge only when downloads should go through API request handling.
+The core `com.deucarian.object-loading` package has no API dependency. Use this integration only when downloads should go through API request handling.
+
+Migration note: replace old manifest entries for `com.deucarian.object-loading.api-bridge` with `com.deucarian.object-loading.api-integration`. The source repository URL still uses `Object-Loading-API-Bridge.git` until the GitHub repository is renamed.
 
 ## What It Does
 
@@ -25,22 +27,22 @@ The core `com.deucarian.object-loading` package has no API dependency. Use this 
 - No caching policy.
 - No material remapping.
 
-Backend URL resolving remains outside this bridge. Resolve the final URL elsewhere, then pass it into `ObjectLoadRequest`.
+Backend URL resolving remains outside this integration. Resolve the final URL elsewhere, then pass it into `ObjectLoadRequest`.
 
 ## Installation
 
-Install this bridge after installing its dependencies:
+Install this integration after installing its dependencies:
 
 - `com.deucarian.object-loading`
 - `com.deucarian.api`
 
-The package depends on `com.deucarian.object-loading` `0.4.1`, `com.deucarian.api` `1.0.0`, and Unity's Newtonsoft Json package `3.2.2`.
+The package depends on `com.deucarian.object-loading` `1.1.1`, `com.deucarian.api` `1.0.2`, and Unity's Newtonsoft Json package `3.2.2`.
 
 ## Usage
 
 ```csharp
 using Deucarian.ObjectLoading;
-using Deucarian.ObjectLoading.APIBridge;
+using Deucarian.ObjectLoading.APIIntegration;
 
 ObjectLoadingPipeline pipeline = new ObjectLoadingPipeline(
     new DirectUrlSourceResolver(),

@@ -1,6 +1,6 @@
 {
-  "name": "Deucarian.ObjectLoading.APIBridge",
-  "rootNamespace": "Deucarian.ObjectLoading.APIBridge",
+  "name": "Deucarian.ObjectLoading.APIIntegration",
+  "rootNamespace": "Deucarian.ObjectLoading.APIIntegration",
   "references": [
     "Deucarian.ObjectLoading",
     "Deucarian.API",

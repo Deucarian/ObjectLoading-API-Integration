@@ -1,8 +1,8 @@
 {
-  "name": "Deucarian.ObjectLoading.APIBridge.Tests",
-  "rootNamespace": "Deucarian.ObjectLoading.APIBridge.Tests",
+  "name": "Deucarian.ObjectLoading.APIIntegration.Tests",
+  "rootNamespace": "Deucarian.ObjectLoading.APIIntegration.Tests",
   "references": [
-    "Deucarian.ObjectLoading.APIBridge",
+    "Deucarian.ObjectLoading.APIIntegration",
     "Deucarian.ObjectLoading",
     "Deucarian.API"
   ],

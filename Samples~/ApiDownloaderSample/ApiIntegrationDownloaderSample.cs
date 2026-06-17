@@ -1,9 +1,9 @@
 using System.Collections;
 using Deucarian.ObjectLoading;
-using Deucarian.ObjectLoading.APIBridge;
+using Deucarian.ObjectLoading.APIIntegration;
 using UnityEngine;
 
-public sealed class ApiBridgeDownloaderSample : MonoBehaviour
+public sealed class ApiIntegrationDownloaderSample : MonoBehaviour
 {
     [SerializeField] private string assetBundleUrl;
     [SerializeField] private string bearerToken;

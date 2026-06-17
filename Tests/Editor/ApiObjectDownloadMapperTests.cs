@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Deucarian.API.Models;
 using Deucarian.ObjectLoading;
 
-namespace Deucarian.ObjectLoading.APIBridge.Tests
+namespace Deucarian.ObjectLoading.APIIntegration.Tests
 {
     public sealed class ApiObjectDownloadMapperTests
     {

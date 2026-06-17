@@ -1,6 +1,6 @@
 # Contributing
 
-Keep this package as a narrow bridge between Object Loading and API.
+Keep this package as a narrow integration between Object Loading and API.
 
 ## Design Rules
 
@@ -16,5 +16,5 @@ Keep this package as a narrow bridge between Object Loading and API.
 
 Before publishing changes:
 
-1. Run EditMode tests for `Deucarian.ObjectLoading.APIBridge.Tests`.
+1. Run EditMode tests for `Deucarian.ObjectLoading.APIIntegration.Tests`.
 2. Validate the package in a Unity project that has Object Loading and API available.

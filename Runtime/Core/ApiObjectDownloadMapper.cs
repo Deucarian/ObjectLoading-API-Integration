@@ -5,7 +5,7 @@ using Deucarian.API;
 using Deucarian.API.Models;
 using Deucarian.ObjectLoading;
 
-namespace Deucarian.ObjectLoading.APIBridge
+namespace Deucarian.ObjectLoading.APIIntegration
 {
     public static class ApiObjectDownloadMapper
     {
