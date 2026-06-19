@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 - 2026-06-19
+
+- Added `ApiAssetBundleSourceContentLoader` for API-backed `UnityWebRequestAssetBundle` loading without materializing AssetBundle bytes.
+- Added `ApiObjectLoadingPipelineFactory` for recommended Object Loading composition with an injected `IApiClient`.
+- Mapped Object Loading headers, bearer token overrides, timeout, CRC, cache metadata, progress, and telemetry into the API AssetBundle path.
+- Kept `ApiObjectDownloader` as a legacy byte-array workflow and updated the sample to the optimized AssetBundle path.
+
 ## 0.1.2 - 2026-06-17
 
 - Renamed the package identity from `com.deucarian.object-loading.api-bridge` to `com.deucarian.object-loading.api-integration`.

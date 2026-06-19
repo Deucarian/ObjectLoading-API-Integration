@@ -7,6 +7,7 @@ using Deucarian.ObjectLoading;
 
 namespace Deucarian.ObjectLoading.APIIntegration
 {
+    [Obsolete("Use ApiAssetBundleSourceContentLoader or ApiObjectLoadingPipelineFactory for API-backed AssetBundle loading. ApiObjectDownloader remains for explicit byte-array workflows.")]
     public sealed class ApiObjectDownloader : IObjectDownloader
     {
         private readonly IApiClient _apiClient;

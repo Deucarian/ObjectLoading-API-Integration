@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Deucarian.API;
 using Deucarian.API.Models;
 using Deucarian.ObjectLoading;
+using UnityEngine;
 
 namespace Deucarian.ObjectLoading.APIIntegration
 {
@@ -69,6 +70,95 @@ namespace Deucarian.ObjectLoading.APIIntegration
             return apiRequest;
         }
 
+        public static ApiRequest CreateAssetBundleApiRequest(ObjectSource source, ObjectLoadRequest request)
+        {
+            ObjectLoadError validation = Validate(source);
+            if (validation != null)
+            {
+                throw new ArgumentException(validation.Message, nameof(source));
+            }
+
+            Dictionary<string, string> headers = request != null
+                ? request.CreateHeaders()
+                : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            string bearerToken = ExtractBearerToken(headers);
+            if (string.IsNullOrWhiteSpace(bearerToken) && request != null)
+            {
+                bearerToken = ObjectLoadRequest.StripBearerPrefix(request.BearerToken);
+            }
+
+            ApiRequest apiRequest = new ApiRequest(
+                source.Url,
+                HttpMethod.GET,
+                string.IsNullOrWhiteSpace(bearerToken)
+                    ? ApiAuthenticationRequirement.Disabled
+                    : ApiAuthenticationRequirement.Required)
+            {
+                ResponseFormat = ApiResponseFormat.AssetBundle,
+                AssetBundleOptions = CreateAssetBundleOptions(request),
+                BearerTokenOverride = bearerToken,
+                TimeoutSeconds = request != null && request.TimeoutSeconds > 0
+                    ? (int?)request.TimeoutSeconds
+                    : null
+            };
+
+            foreach (KeyValuePair<string, string> header in headers)
+            {
+                if (string.IsNullOrWhiteSpace(header.Key)
+                    || string.Equals(header.Key, "Authorization", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                apiRequest.Headers[header.Key.Trim()] = header.Value;
+            }
+
+            return apiRequest;
+        }
+
+        public static ApiAssetBundleRequestOptions CreateAssetBundleOptions(ObjectLoadRequest request)
+        {
+            return new ApiAssetBundleRequestOptions
+            {
+                Crc = request != null ? request.Crc : 0,
+                CacheMode = MapCacheMode(request != null ? request.CacheMode : ObjectLoadCacheMode.Default),
+                CacheKey = request != null ? request.CacheKey : null,
+                CacheHash = request != null ? request.CacheHash : null,
+                CacheVersion = request != null ? request.CacheVersion : null
+            };
+        }
+
+        public static string DescribeCacheStatus(ObjectLoadRequest request)
+        {
+            ObjectLoadCacheMode cacheMode = request != null ? request.CacheMode : ObjectLoadCacheMode.Default;
+            if (cacheMode == ObjectLoadCacheMode.Disabled)
+            {
+                return "disabled";
+            }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return "webgl-browser-cache";
+#else
+            Hash128 hash;
+            if (TryGetCacheHash(request, out hash))
+            {
+                return request != null && !string.IsNullOrWhiteSpace(request.CacheKey)
+                    ? "unity-cache-key-hash"
+                    : "unity-cache-hash";
+            }
+
+            if (request != null && request.CacheVersion.HasValue)
+            {
+                return "unity-cache-version";
+            }
+
+            return cacheMode == ObjectLoadCacheMode.UseUnityCache
+                ? "unity-cache-metadata-missing"
+                : "not-configured";
+#endif
+        }
+
         public static ObjectDownloadResult MapApiResult(ApiResult<byte[]> result, string fallbackUrl = null)
         {
             if (result == null)
@@ -100,6 +190,11 @@ namespace Deucarian.ObjectLoading.APIIntegration
         }
 
         public static ObjectLoadError MapError(ApiResult<byte[]> result, string fallbackUrl = null)
+        {
+            return MapError<byte[]>(result, fallbackUrl);
+        }
+
+        public static ObjectLoadError MapError<TResponse>(ApiResult<TResponse> result, string fallbackUrl = null)
         {
             ApiError error = result != null ? result.Error : null;
             ObjectLoadErrorCode code = error != null && error.IsCancellation
@@ -144,6 +239,7 @@ namespace Deucarian.ObjectLoading.APIIntegration
                 Method = apiRequest.Method.ToString(),
                 Authentication = apiRequest.Authentication.ToString(),
                 ResponseFormat = apiRequest.ResponseFormat.ToString(),
+                AssetBundleOptions = apiRequest.AssetBundleOptions,
                 TimeoutSeconds = apiRequest.TimeoutSeconds,
                 BearerTokenOverride = string.IsNullOrWhiteSpace(apiRequest.BearerTokenOverride) ? null : RedactedValue,
                 Headers = redactedHeaders
@@ -166,6 +262,39 @@ namespace Deucarian.ObjectLoading.APIIntegration
             }
 
             return ObjectLoadRequest.StripBearerPrefix(authorization);
+        }
+
+        private static ApiAssetBundleCacheMode MapCacheMode(ObjectLoadCacheMode cacheMode)
+        {
+            switch (cacheMode)
+            {
+                case ObjectLoadCacheMode.Disabled:
+                    return ApiAssetBundleCacheMode.Disabled;
+                case ObjectLoadCacheMode.UseUnityCache:
+                    return ApiAssetBundleCacheMode.UseUnityCache;
+                case ObjectLoadCacheMode.Default:
+                default:
+                    return ApiAssetBundleCacheMode.Default;
+            }
+        }
+
+        private static bool TryGetCacheHash(ObjectLoadRequest request, out Hash128 hash)
+        {
+            hash = default(Hash128);
+            if (request == null || string.IsNullOrWhiteSpace(request.CacheHash))
+            {
+                return false;
+            }
+
+            try
+            {
+                hash = Hash128.Parse(request.CacheHash.Trim());
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool IsSensitiveHeader(string name)
@@ -197,6 +326,9 @@ namespace Deucarian.ObjectLoading.APIIntegration
 
         [JsonProperty("response_format")]
         public string ResponseFormat { get; set; }
+
+        [JsonProperty("asset_bundle_options")]
+        public ApiAssetBundleRequestOptions AssetBundleOptions { get; set; }
 
         [JsonProperty("timeout_seconds")]
         public int? TimeoutSeconds { get; set; }

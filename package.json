@@ -1,9 +1,9 @@
 {
   "name": "com.deucarian.object-loading.api-integration",
   "displayName": "Deucarian Object Loading API Integration",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "unity": "2021.3",
-  "description": "Optional integration that lets Deucarian Object Loading download AssetBundle bytes through Deucarian API.",
+  "description": "Optional integration that lets Deucarian Object Loading use optimized API-backed UnityWebRequestAssetBundle transport.",
   "keywords": [
     "assetbundle",
     "object-loading",
@@ -20,13 +20,13 @@
   },
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.2",
-    "com.deucarian.object-loading": "1.1.1",
-    "com.deucarian.api": "1.0.2"
+    "com.deucarian.api": "1.1.0",
+    "com.deucarian.object-loading": "1.1.1"
   },
   "samples": [
     {
-      "displayName": "API Downloader Sample",
-      "description": "Shows how to compose Object Loading with ApiObjectDownloader.",
+      "displayName": "API AssetBundle Loader Sample",
+      "description": "Shows how to compose Object Loading with API-backed UnityWebRequestAssetBundle loading.",
       "path": "Samples~/ApiDownloaderSample"
     }
   ]

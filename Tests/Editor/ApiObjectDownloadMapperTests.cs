@@ -44,6 +44,39 @@ namespace Deucarian.ObjectLoading.APIIntegration.Tests
         }
 
         [Test]
+        public void CreateAssetBundleApiRequest_MapsAssetBundleTransportOptions()
+        {
+            ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
+            request.BearerToken = "Bearer secret-token";
+            request.TimeoutSeconds = 42;
+            request.CacheMode = ObjectLoadCacheMode.UseUnityCache;
+            request.CacheKey = "model";
+            request.CacheHash = "0123456789abcdef0123456789abcdef";
+            request.CacheVersion = 7;
+            request.Crc = 99;
+            request.AddHeader("X-Trace", "abc");
+
+            ApiRequest apiRequest = ApiObjectDownloadMapper.CreateAssetBundleApiRequest(
+                ObjectSource.DirectUrl("https://example.com/object.bundle?platform=webgl"),
+                request);
+
+            Assert.AreEqual("https://example.com/object.bundle?platform=webgl", apiRequest.Endpoint);
+            Assert.AreEqual(ApiResponseFormat.AssetBundle, apiRequest.ResponseFormat);
+            Assert.AreEqual(ApiAuthenticationRequirement.Required, apiRequest.Authentication);
+            Assert.AreEqual("secret-token", apiRequest.BearerTokenOverride);
+            Assert.AreEqual(42, apiRequest.TimeoutSeconds);
+            Assert.AreEqual("abc", apiRequest.Headers["X-Trace"]);
+            Assert.False(apiRequest.Headers.ContainsKey("Authorization"));
+            Assert.NotNull(apiRequest.AssetBundleOptions);
+            Assert.AreEqual(ApiAssetBundleCacheMode.UseUnityCache, apiRequest.AssetBundleOptions.CacheMode);
+            Assert.AreEqual("model", apiRequest.AssetBundleOptions.CacheKey);
+            Assert.AreEqual("0123456789abcdef0123456789abcdef", apiRequest.AssetBundleOptions.CacheHash);
+            Assert.AreEqual(7, apiRequest.AssetBundleOptions.CacheVersion);
+            Assert.AreEqual(99, apiRequest.AssetBundleOptions.Crc);
+            Assert.AreEqual("unity-cache-key-hash", ApiObjectDownloadMapper.DescribeCacheStatus(request));
+        }
+
+        [Test]
         public void MapApiResult_MapsSuccessfulBytes()
         {
             byte[] bytes = { 1, 2, 3 };
