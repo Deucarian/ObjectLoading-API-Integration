@@ -40,7 +40,7 @@ public sealed class ApiIntegrationDownloaderSample : MonoBehaviour
         {
             if (progress.Phase == ObjectLoadPhase.Downloading)
             {
-                Debug.Log("API AssetBundle progress: " + Mathf.RoundToInt(progress.Normalized * 100f) + "%");
+                ObjectLoadingLog.Downloader.Info("API AssetBundle progress: " + Mathf.RoundToInt(progress.Normalized * 100f) + "%");
             }
         };
 
@@ -50,11 +50,11 @@ public sealed class ApiIntegrationDownloaderSample : MonoBehaviour
         if (result != null && result.Succeeded)
         {
             _handle = result.Handle;
-            Debug.Log(result.Diagnostics.ToText());
+            ObjectLoadingLog.Diagnostics.Info(result.Diagnostics.ToText());
         }
         else
         {
-            Debug.LogError(result != null ? result.Message : "Object load finished without a result.");
+            ObjectLoadingLog.Loader.Error(result != null ? result.Message : "Object load finished without a result.");
         }
     }
 

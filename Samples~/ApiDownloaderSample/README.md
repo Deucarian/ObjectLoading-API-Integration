@@ -5,7 +5,7 @@
 - create or inject an `IApiClient`
 - create the Object Loading pipeline through `ApiObjectLoadingPipelineFactory`
 - pass bearer auth on the `ObjectLoadRequest`
-- receive Object Loading progress and diagnostics
+- receive Object Loading progress and diagnostics through `ObjectLoadingLog`
 - unload the returned object handle during cleanup
 
 The sample still expects a resolved AssetBundle URL. It does not resolve backend URLs or move backend route construction into the integration.

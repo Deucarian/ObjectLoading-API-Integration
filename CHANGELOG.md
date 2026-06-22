@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 - 2026-06-22
+
+- Routed the API AssetBundle Loader sample through Object Loading's package-owned log categories instead of direct Unity Debug calls.
+- Kept the integration package dependency set unchanged by using the existing `ObjectLoadingLog` facade from `com.deucarian.object-loading`.
+
 ## 0.2.1 - 2026-06-22
 
 - Updated package repository metadata to `Deucarian/ObjectLoading-API-Integration`.
