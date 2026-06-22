@@ -82,6 +82,12 @@ Import the **API Downloader Sample** from Unity's Package Manager to see `ApiObj
 
 Run the package's EditMode tests in Unity. Tests cover auth/header forwarding, byte-result mapping, error mapping, and debug redaction.
 
+## Architecture / Contributor Notes
+
+- [AGENTS.md](AGENTS.md) contains repository-specific ownership and Codex guidance.
+- Deucarian architecture rules live in [Package Registry](https://github.com/Deucarian/Package-Registry/blob/develop/ARCHITECTURE.md).
+- Capability ownership is tracked in [CAPABILITY_OWNERSHIP.md](https://github.com/Deucarian/Package-Registry/blob/develop/CAPABILITY_OWNERSHIP.md).
+
 ## License
 
 See [LICENSE.md](LICENSE.md).
