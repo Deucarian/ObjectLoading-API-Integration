@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 - 2026-06-22
+
+- Updated package repository metadata to `Deucarian/ObjectLoading-API-Integration`.
+- Documented the current package version and aligned the API dependency reference with `package.json`.
+
 ## 0.2.0 - 2026-06-19
 
 - Added `ApiAssetBundleSourceContentLoader` for API-backed `UnityWebRequestAssetBundle` loading without materializing AssetBundle bytes.

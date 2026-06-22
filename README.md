@@ -6,7 +6,7 @@
 
 The core `com.deucarian.object-loading` package has no API dependency. Use this integration only when downloads should go through API request handling.
 
-Migration note: replace old manifest entries for `com.deucarian.object-loading.api-bridge` with `com.deucarian.object-loading.api-integration`. The source repository URL still uses `Object-Loading-API-Bridge.git` until the GitHub repository is renamed.
+Migration note: replace old manifest entries for `com.deucarian.object-loading.api-bridge` with `com.deucarian.object-loading.api-integration`. Current installs use the `ObjectLoading-API-Integration.git` repository.
 
 ## What It Does
 
@@ -36,7 +36,11 @@ Install this integration after installing its dependencies:
 - `com.deucarian.object-loading`
 - `com.deucarian.api`
 
-The package depends on `com.deucarian.object-loading` `1.1.1`, `com.deucarian.api` `1.0.2`, and Unity's Newtonsoft Json package `3.2.2`.
+The package depends on `com.deucarian.object-loading` `1.1.1`, `com.deucarian.api` `1.1.0`, and Unity's Newtonsoft Json package `3.2.2`.
+
+Current package version: `0.2.1`.
+
+`com.deucarian.object-loading` supplies the runtime loading pipeline this package adapts. `com.deucarian.api` supplies the request, response, authentication, AssetBundle transport, and progress models used by the integration.
 
 ## Usage
 
