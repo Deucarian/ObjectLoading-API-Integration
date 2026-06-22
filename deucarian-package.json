@@ -1,0 +1,22 @@
+{
+  "packageId": "com.deucarian.object-loading.api-integration",
+  "displayName": "Deucarian Object Loading API Integration",
+  "ownedCapabilities": [],
+  "runtimeAssemblies": [
+    "Deucarian.ObjectLoading.APIIntegration"
+  ],
+  "editorAssemblies": [],
+  "sampleAssemblies": [],
+  "testAssemblies": [
+    "Deucarian.ObjectLoading.APIIntegration.Tests"
+  ],
+  "requiredDependencies": [
+    "com.deucarian.api",
+    "com.deucarian.object-loading",
+    "com.unity.nuget.newtonsoft-json"
+  ],
+  "optionalVersionDefinedDependencies": [],
+  "allowedDirectDebugCalls": [],
+  "allowedDirectUnityObjectLifetimeCalls": [],
+  "expectedSamplesRoot": "Samples~"
+}
