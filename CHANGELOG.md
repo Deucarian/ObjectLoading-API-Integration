@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4 - 2026-06-22
+
+- Merged main branch history into develop for stable promotion ancestry.
+- Updated the exact `com.deucarian.api` dependency to `1.1.1`.
+
 ## 0.2.3 - 2026-06-22
 
 - Updated the exact `com.deucarian.object-loading` dependency to `1.2.0`.
