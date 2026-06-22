@@ -104,6 +104,10 @@ namespace Deucarian.ObjectLoading.APIIntegration.Tests
         {
             while (enumerator.MoveNext())
             {
+                if (enumerator.Current is IEnumerator nested)
+                {
+                    Run(nested);
+                }
             }
         }
 
