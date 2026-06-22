@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5 - 2026-06-22
+
+- Updated exact API and Object Loading dependencies for the accepted stable release line.
+
 ## 0.2.4 - 2026-06-22
 
 - Merged main branch history into develop for stable promotion ancestry.
