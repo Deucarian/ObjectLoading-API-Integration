@@ -8,6 +8,12 @@ The core `com.deucarian.object-loading` package has no API dependency. Use this 
 
 Migration note: replace old manifest entries for `com.deucarian.object-loading.api-bridge` with `com.deucarian.object-loading.api-integration`. Current installs use the `ObjectLoading-API-Integration.git` repository.
 
+## When To Use This
+
+Use this package when a project already uses Deucarian Object Loading and wants its object-download step to run through Deucarian API request handling, authentication, headers, timeouts, cancellation, byte responses, and API error mapping.
+
+Do not use this package for Session lifecycle, backend object/version resolution, direct Object Loading runtime behavior, package installation, caching policy, Addressables, glTF loading, or material/render-pipeline repair. Resolve the final URL elsewhere, then pass it into `ObjectLoadRequest`.
+
 ## What It Does
 
 - Implements `IObjectDownloader` as `ApiObjectDownloader`.
@@ -41,6 +47,27 @@ The package depends on `com.deucarian.object-loading` `1.2.1`, `com.deucarian.ap
 Current package version: `0.2.5`.
 
 `com.deucarian.object-loading` supplies the runtime loading pipeline this package adapts. `com.deucarian.api` supplies the request, response, authentication, AssetBundle transport, and progress models used by the integration.
+
+Stable:
+
+```json
+"com.deucarian.object-loading.api-integration": "https://github.com/Deucarian/ObjectLoading-API-Integration.git#main"
+```
+
+Development:
+
+```json
+"com.deucarian.object-loading.api-integration": "https://github.com/Deucarian/ObjectLoading-API-Integration.git#develop"
+```
+
+Use `#main` for stable package consumption and `#develop` when testing active package work.
+
+## Quick Start
+
+1. Install `com.deucarian.object-loading`, `com.deucarian.api`, and this integration package.
+2. Let Unity finish resolving packages and compiling assemblies.
+3. Import the `API AssetBundle Loader Sample` sample if you want a working reference setup.
+4. Compose `ApiObjectDownloader` into an `ObjectLoadingPipeline` where the project needs API-backed byte downloads.
 
 ## Usage
 
@@ -81,6 +108,27 @@ Import the **API Downloader Sample** from Unity's Package Manager to see `ApiObj
 ## Tests
 
 Run the package's EditMode tests in Unity. Tests cover auth/header forwarding, byte-result mapping, error mapping, and debug redaction.
+
+## Validation
+
+Run the shared package validator from the repository root:
+
+```powershell
+python C:/Repositories/Package-Registry/Tools/deucarian_package_validator.py --registry-root C:/Repositories/Package-Registry --repository-root . --config deucarian-package.json
+```
+
+Documentation-only updates should still pass:
+
+```powershell
+git diff --check
+```
+
+## Troubleshooting
+
+- Downloads fail before Object Loading receives bytes: inspect the API `ApiResult<byte[]>` error and request headers first.
+- Auth does not apply: set `ObjectLoadRequest.BearerToken`, provide an `Authorization: Bearer ...` header, or inject an API client configured with the expected auth provider.
+- The integration is installed but not used: confirm the `ObjectLoadingPipeline` is composed with `ApiObjectDownloader` instead of the default downloader.
+- Backend lookup is missing: resolve project/object/version URLs in API or application code before creating the `ObjectLoadRequest`.
 
 ## Architecture / Contributor Notes
 
