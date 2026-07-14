@@ -138,4 +138,4 @@ git diff --check
 
 ## License
 
-See [LICENSE.md](LICENSE.md).
+MIT. See [LICENSE.md](LICENSE.md).
