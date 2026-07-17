@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.6 - 2026-07-17
+
+- Kept the imported API loader sample within its declared dependency boundary by exposing status text without a direct Logging assembly reference.
+- Reused Object Loading's canonical request helpers, completed the integration sample contract, and updated exact API and Object Loading dependencies.
+
 ## 0.2.5 - 2026-06-22
 
 - Updated exact API and Object Loading dependencies for the accepted stable release line.

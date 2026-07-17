@@ -77,6 +77,18 @@ namespace Deucarian.ObjectLoading.APIIntegration.Tests
         }
 
         [Test]
+        public void DescribeCacheStatus_TrimmedHashUsesUnityCachePath()
+        {
+            ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
+            request.CacheMode = ObjectLoadCacheMode.UseUnityCache;
+            request.CacheHash = "  0123456789abcdef0123456789abcdef  ";
+
+            Assert.AreEqual(
+                "unity-cache-hash",
+                ApiObjectDownloadMapper.DescribeCacheStatus(request));
+        }
+
+        [Test]
         public void MapApiResult_MapsSuccessfulBytes()
         {
             byte[] bytes = { 1, 2, 3 };
@@ -121,6 +133,8 @@ namespace Deucarian.ObjectLoading.APIIntegration.Tests
             ObjectLoadRequest request = ObjectLoadRequest.FromUrl("https://example.com/object.bundle");
             request.BearerToken = "secret-token";
             request.AddHeader("X-Access-Token", "header-secret");
+            request.AddHeader("Proxy-Authorization", "proxy-secret");
+            request.AddHeader("Api-Key", "api-key-secret");
             request.AddHeader("X-Trace", "visible");
 
             string json = ApiObjectDownloadMapper.CreateDebugSnapshotJson(
@@ -129,6 +143,8 @@ namespace Deucarian.ObjectLoading.APIIntegration.Tests
 
             Assert.False(json.Contains("secret-token"));
             Assert.False(json.Contains("header-secret"));
+            Assert.False(json.Contains("proxy-secret"));
+            Assert.False(json.Contains("api-key-secret"));
             Assert.True(json.Contains("[redacted]"));
             Assert.True(json.Contains("visible"));
         }

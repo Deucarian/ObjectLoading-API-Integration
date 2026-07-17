@@ -42,9 +42,9 @@ Install this integration after installing its dependencies:
 - `com.deucarian.object-loading`
 - `com.deucarian.api`
 
-The package depends on `com.deucarian.object-loading` `1.2.1`, `com.deucarian.api` `1.1.3`, and Unity's Newtonsoft Json package `3.2.2`.
+The package depends on `com.deucarian.object-loading` `1.2.2`, `com.deucarian.api` `1.1.4`, and Unity's Newtonsoft Json package `3.2.2`.
 
-Current package version: `0.2.5`.
+Current package version: `0.2.6`.
 
 `com.deucarian.object-loading` supplies the runtime loading pipeline this package adapts. `com.deucarian.api` supplies the request, response, authentication, AssetBundle transport, and progress models used by the integration.
 
