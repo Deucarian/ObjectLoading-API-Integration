@@ -141,7 +141,9 @@ namespace Deucarian.ObjectLoading.APIIntegration
             return "webgl-browser-cache";
 #else
             Hash128 hash;
-            if (TryGetCacheHash(request, out hash))
+            if (ObjectLoadTransportUtility.TryParseCacheHash(
+                    request != null ? request.CacheHash : null,
+                    out hash))
             {
                 return request != null && !string.IsNullOrWhiteSpace(request.CacheKey)
                     ? "unity-cache-key-hash"
@@ -230,7 +232,9 @@ namespace Deucarian.ObjectLoading.APIIntegration
             Dictionary<string, string> redactedHeaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<string, string> header in apiRequest.Headers)
             {
-                redactedHeaders[header.Key] = IsSensitiveHeader(header.Key) ? RedactedValue : header.Value;
+                redactedHeaders[header.Key] = ObjectLoadTransportUtility.IsSensitiveHeader(header.Key)
+                    ? RedactedValue
+                    : header.Value;
             }
 
             ApiObjectDownloadDebugSnapshot snapshot = new ApiObjectDownloadDebugSnapshot
@@ -278,39 +282,6 @@ namespace Deucarian.ObjectLoading.APIIntegration
             }
         }
 
-        private static bool TryGetCacheHash(ObjectLoadRequest request, out Hash128 hash)
-        {
-            hash = default(Hash128);
-            if (request == null || string.IsNullOrWhiteSpace(request.CacheHash))
-            {
-                return false;
-            }
-
-            try
-            {
-                hash = Hash128.Parse(request.CacheHash.Trim());
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private static bool IsSensitiveHeader(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return false;
-            }
-
-            string normalized = name.Trim();
-            return normalized.Equals("Authorization", StringComparison.OrdinalIgnoreCase)
-                   || normalized.Equals("Proxy-Authorization", StringComparison.OrdinalIgnoreCase)
-                   || normalized.Equals("X-Api-Key", StringComparison.OrdinalIgnoreCase)
-                   || normalized.Equals("Api-Key", StringComparison.OrdinalIgnoreCase)
-                   || normalized.IndexOf("token", StringComparison.OrdinalIgnoreCase) >= 0;
-        }
     }
 
     public sealed class ApiObjectDownloadDebugSnapshot

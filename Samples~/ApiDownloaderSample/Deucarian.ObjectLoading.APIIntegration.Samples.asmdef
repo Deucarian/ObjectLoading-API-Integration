@@ -1,0 +1,6 @@
+{
+  "name": "Deucarian.ObjectLoading.APIIntegration.Samples",
+  "rootNamespace": "Deucarian.ObjectLoading.APIIntegration.Samples",
+  "references": ["Deucarian.API", "Deucarian.ObjectLoading", "Deucarian.ObjectLoading.APIIntegration"],
+  "autoReferenced": false
+}
