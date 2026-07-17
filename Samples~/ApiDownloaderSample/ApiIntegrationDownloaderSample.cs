@@ -16,6 +16,8 @@ public sealed class ApiIntegrationDownloaderSample : MonoBehaviour
     private IObjectLoadHandle _handle;
     private IApiClient _apiClient;
 
+    public string LastStatus { get; private set; }
+
     private void Awake()
     {
         if (_pipeline == null)
@@ -40,7 +42,7 @@ public sealed class ApiIntegrationDownloaderSample : MonoBehaviour
         {
             if (progress.Phase == ObjectLoadPhase.Downloading)
             {
-                ObjectLoadingLog.Downloader.Info("API AssetBundle progress: " + Mathf.RoundToInt(progress.Normalized * 100f) + "%");
+                LastStatus = "API AssetBundle progress: " + Mathf.RoundToInt(progress.Normalized * 100f) + "%";
             }
         };
 
@@ -50,11 +52,11 @@ public sealed class ApiIntegrationDownloaderSample : MonoBehaviour
         if (result != null && result.Succeeded)
         {
             _handle = result.Handle;
-            ObjectLoadingLog.Diagnostics.Info(result.Diagnostics.ToText());
+            LastStatus = result.Diagnostics.ToText();
         }
         else
         {
-            ObjectLoadingLog.Loader.Error(result != null ? result.Message : "Object load finished without a result.");
+            LastStatus = result != null ? result.Message : "Object load finished without a result.";
         }
     }
 

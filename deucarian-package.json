@@ -1,12 +1,15 @@
 {
   "packageId": "com.deucarian.object-loading.api-integration",
   "displayName": "Deucarian Object Loading API Integration",
+  "samplePolicy": "playable-scene",
   "ownedCapabilities": [],
   "runtimeAssemblies": [
     "Deucarian.ObjectLoading.APIIntegration"
   ],
   "editorAssemblies": [],
-  "sampleAssemblies": [],
+  "sampleAssemblies": [
+    "Deucarian.ObjectLoading.APIIntegration.Samples"
+  ],
   "testAssemblies": [
     "Deucarian.ObjectLoading.APIIntegration.Tests"
   ],
